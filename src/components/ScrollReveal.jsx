@@ -1,0 +1,33 @@
+import { useEffect, useRef } from 'react';
+
+/**
+ * ScrollReveal — wraps children in a div that fades+rises into view
+ * using IntersectionObserver. Pure CSS transition, no library needed.
+ */
+export default function ScrollReveal({ children, delay = 0, className = '' }) {
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          el.classList.add('visible');
+          obs.unobserve(el);
+        }
+      },
+      { threshold: 0.12 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  const delayClass = delay ? `reveal-delay-${delay}` : '';
+
+  return (
+    <div ref={ref} className={`reveal ${delayClass} ${className}`}>
+      {children}
+    </div>
+  );
+}
